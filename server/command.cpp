@@ -17,10 +17,7 @@ Command::Command(const char* name, uint nbArgs,...){
 }
 
 Command::~Command(){
-    delete this->args;
-    close(this->childStdIn);
-    close(this->childStdOut);
-    close(this->childStdError);
+    this->closePipes();
     this->sendSignal(SIGKILL);
 }
 
@@ -31,9 +28,7 @@ void Command::waitExecution(){
 void Command::execute(){
     if(this->hasStarted){
         this->waitExecution(); // Wating for last execution to finish before starting a new one.
-        close(this->childStdIn);
-        close(this->childStdOut);
-        close(this->childStdError);
+        this->closePipes();
     }
     int inputPipe[2];
     int outputPipe[2];
@@ -43,23 +38,12 @@ void Command::execute(){
     pipe(errorPipe);
     this->processPid = fork();
     if(this->processPid == 0){ // child process
-        dup2(outputPipe[1], 1);
-        dup2(errorPipe[1], 2);
-        dup2(inputPipe[0], 0);
-        close(inputPipe[0]);
-        close(inputPipe[1]);
-        close(outputPipe[0]);
-        close(outputPipe[1]);
-        close(errorPipe[0]);
-        close(errorPipe[1]);
-        execvp(this->name, this->args);
+        executeChildProcess(inputPipe, outputPipe, errorPipe);
+    } else if (this->processPid == -1) { // in case of error
+        this->closePipes();
+        std::cerr << "ERROR: Failed to create child process for command '" << name << "'" << std::endl;
     }
-    close(outputPipe[1]);
-    close(errorPipe[1]);
-    close(inputPipe[0]);
-    this->childStdIn = inputPipe[1];
-    this->childStdOut = outputPipe[0];
-    this->childStdError = errorPipe[0];
+    this->setupParentPipes(inputPipe, outputPipe, errorPipe);
     this->hasStarted = true;
 }
 
@@ -75,7 +59,7 @@ ssize_t Command::writeStdin(void *__buf, size_t __nbytes){
     return write(this->childStdIn, __buf, __nbytes);
 }
 
-bool Command::exitedNormaly(){
+bool Command::exitedNormally(){
     waitExecution();
     return WIFEXITED(this->status);
 }
@@ -92,4 +76,33 @@ int Command::getStatus(){
 
 int Command::sendSignal(int sig) {
     return kill(this->processPid, sig);
+}
+
+void Command::executeChildProcess(int inputPipe[], int outputPipe[], int errorPipe[]) {
+    dup2(outputPipe[1], 1);
+    dup2(errorPipe[1], 2);
+    dup2(inputPipe[0], 0);
+    close(inputPipe[0]);
+    close(inputPipe[1]);
+    close(outputPipe[0]);
+    close(outputPipe[1]);
+    close(errorPipe[0]);
+    close(errorPipe[1]);
+    execvp(this->name, this->args); // if this fails program continues here
+    std::cerr << "ERROR: Failed to execute command '" << name << "'" << std::endl;
+}
+
+void Command::setupParentPipes(int inputPipe[], int outputPipe[], int errorPipe[]) {
+    close(outputPipe[1]);
+    close(errorPipe[1]);
+    close(inputPipe[0]);
+    this->childStdIn = inputPipe[1];
+    this->childStdOut = outputPipe[0];
+    this->childStdError = errorPipe[0];
+}
+
+void Command::closePipes() {
+    close(this->childStdIn);
+    close(this->childStdOut);
+    close(this->childStdError);
 }

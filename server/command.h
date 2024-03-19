@@ -17,7 +17,6 @@ private:
     int childStdOut;
     int childStdError;
     bool hasStarted;
-    bool isDone;
     int status;
 
 public:
@@ -35,11 +34,18 @@ public:
 
     void waitExecution();
 
-    bool exitedNormaly();
+    bool exitedNormally();
 
     int getExitStatus();
 
     int getStatus();
     
     int sendSignal(int sig);
+
+private:
+    void executeChildProcess(int inputPipe[], int outputPipe[], int errorPipe[]);
+
+    void setupParentPipes(int inputPipe[], int outputPipe[], int errorPipe[]);
+
+    void closePipes();
 };
