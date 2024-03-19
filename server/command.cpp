@@ -48,14 +48,23 @@ void Command::execute(){
 }
 
 ssize_t Command::readStdout(void* buffer, size_t nbBytes){
+    if (!this->hasStarted) {
+        return -1;
+    }
     return read(this->childStdOut, buffer, nbBytes);
 }
 
 ssize_t Command::readStderr(void* buffer, size_t nbBytes){
+    if (!this->hasStarted) {
+        return -1;
+    }
     return read(this->childStdError, buffer, nbBytes);
 }
 
 ssize_t Command::writeStdin(void *__buf, size_t __nbytes){
+    if (!this->hasStarted) {
+        return -1;
+    }
     return write(this->childStdIn, __buf, __nbytes);
 }
 
