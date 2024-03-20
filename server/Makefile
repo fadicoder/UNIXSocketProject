@@ -7,6 +7,9 @@ OBJECTS=$(patsubst %, $(BUILD_DIR)/%, $(SRC:.cpp=.o))
 CC=g++
 INCLUDE_PATH=../lib
 LIB_PATH=$(INCLUDE_PATH)/build/lib.a
+LD_FLAGS=-Wall -L. $(LIB_PATH) -pthread
+CC_FLAG=-Wall -I $(INCLUDE_PATH)
+
 REMOVE=rm -fdr
 
 .PHONY: all run clean
@@ -14,20 +17,13 @@ REMOVE=rm -fdr
 all: $(TARGET)
 
 $(TARGET): $(BUILD_DIR) $(OBJECTS)
-	$(CC) -o $(TARGET) $(OBJECTS) -L. $(LIB_PATH)
+	$(CC) -o $(TARGET) $(OBJECTS) $(LD_FLAGS)
 
 $(BUILD_DIR):
 	mkdir $(BUILD_DIR) 
 
 $(BUILD_DIR)/%.o: %.cpp
-	$(CC) -I $(INCLUDE_PATH) -o $@ -c $<
+	$(CC) -o $@ -c $< $(CC_FLAG)
 
 clean:
 	$(REMOVE) $(TARGET) $(BUILD_DIR) *.o
-
-
-run: $(TARGET)
-	./$(TARGET) $(filter-out $@,$(MAKECMDGOALS))
-
-%: # to allow passing arguments
-	@exit 0
