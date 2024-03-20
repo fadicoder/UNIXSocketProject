@@ -2,30 +2,31 @@
 
 bool MySocket::init(const char* socketPath) {
     char buffer;
-
-    // Create a new client socket with domain: AF_UNIX, type: SOCK_STREAM, protocol: 0
+    
     this->fd = socket(AF_UNIX, SOCK_STREAM, 0);
-
+    
     if (this->fd == -1) {
         std::cerr << "ERROR: Failed to create socket" << std::endl;
         return false;
     }
 
-    memset(&address, 0, sizeof(struct sockaddr_un));
+    memset(&address, 0, sizeof(sockaddr_un));
     address.sun_family = AF_UNIX;
     strncpy(address.sun_path, socketPath, sizeof(address.sun_path) - 1);
+    // TODO: add size verification
 
     return true;
 }
 
 bool MySocket::create(const char* socketPath) {
     this->init(socketPath);
-    if (bind(fd, (struct sockaddr*) &address, sizeof(struct sockaddr_un)) == -1) {
-        std::cerr << "Error: failed to build the socket file" << std::endl;
+    if (remove(socketPath) == -1 && errno != ENOENT) {
+        std::cerr << "ERROR: could not delete existing socket file" << std::endl;
         return false;
     }
-    else {
-        std::cout << "INFO: new socket created"<< std::endl;
+    if (bind(fd, (struct sockaddr*) &address, sizeof(sockaddr_un)) == -1) {
+        std::cerr << "ERROR: failed create a new socket" << std::endl;
+        return false;
     }
 
     // The listen call marks the socket as *passive*. The socket will subsequently
@@ -33,7 +34,7 @@ bool MySocket::create(const char* socketPath) {
     // listen cannot be called on a connected socket (a socket on which a connect()
     // has been succesfully performed or a socket returned by a call to accept()).
     if (listen(fd, 100) == -1) {
-        std::cerr << "Error: Error occured while tying to make socket listen" << std::endl;
+        std::cerr << "ERROR: Error occured while tying to make socket listen" << std::endl;
         return false;
     }
     return true;
