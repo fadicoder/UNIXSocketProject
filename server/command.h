@@ -1,4 +1,7 @@
 
+#ifndef COMMAND_H
+#define COMMAND_H
+
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -20,7 +23,7 @@ private:
     int status;
 
 public:
-    Command(const char* name, uint nbArgs,...);
+    Command(const char* name, uint nbArgs = 0,...);
 
     ~Command();
 
@@ -74,3 +77,5 @@ private:
 
     void closePipes();
 };
+
+#endif // COMMAND_H
