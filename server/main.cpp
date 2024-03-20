@@ -13,14 +13,15 @@
 #define VERSION_SIZE 40
 #define REJECTION_MESSAGE "REJECTED"
 
+
 Command versionCommand = Command("git", 2, "rev-parse", "HEAD");
 
 void* handleClient(MySocket* clientSocket) {
+    std::cout << "INFO: new client accepted" << std::endl;
     std::string input;
     bool readSuccess;
     do {
         readSuccess = clientSocket->readString(&input);
-        std::cout << "Recieved: " << input << std::endl;
 
         if (input == "VERSION") {
             versionCommand.execute();
@@ -32,6 +33,7 @@ void* handleClient(MySocket* clientSocket) {
             clientSocket->writeString(REJECTION_MESSAGE);
         }
     } while(readSuccess);
+    std::cout << "INFO: client disconnected" << std::endl;
     delete clientSocket;
     return nullptr;
 }
@@ -41,13 +43,14 @@ int main(int argc, char** argv) {
         std::cout << "Required argument: path to socket" << std::endl;
         return 1;
     }
+    signal(SIGPIPE, SIG_IGN); // to make clients disconnect silently
+    
     const char* SOCKET_PATH = argv[1];
     
     MySocket mySocket;
     if(!mySocket.create(SOCKET_PATH)){
         return 1;
     }
-    
 
     std::cout << "INFO: Waiting for a connection..." << std::endl;
     while(true) {

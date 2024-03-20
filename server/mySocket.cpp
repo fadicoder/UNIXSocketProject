@@ -2,7 +2,7 @@
 
 bool MySocket::init(const char* socketPath) {
     char buffer;
-    
+
     this->fd = socket(AF_UNIX, SOCK_STREAM, 0);
     
     if (this->fd == -1) {
@@ -82,8 +82,8 @@ bool MySocket::readData(void* data, ssize_t size) {
     while (nbBytesLeft > 0) {
         nbBytesread = read(this->fd, data, size);
         nbBytesLeft = size - nbBytesread;
-        if (nbBytesread == -1) {
-            std::cerr << "ERROR: haha Failed to read data from socket" << std::endl;
+        if (nbBytesread <= 0) {
+            std::cerr << "ERROR: Failed to read data from socket" << std::endl;
             return false;
         }
     }
@@ -126,7 +126,6 @@ bool MySocket::acceptClient(void* handleClient(MySocket*)) {
         std::cerr << "ERROR: failed to create thread for client " << cfd << std::endl;
         return false;
     }
-    std::cout << "INFO: Client handle completed" << std::endl;
     return true;
 }
 
