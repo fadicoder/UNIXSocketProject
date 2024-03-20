@@ -18,7 +18,7 @@ void sigpipeHandler(int signum) {
 
 void sendCommandArgs(Socket socket, int argc, char** argv) {
     std::string response;
-    for (uint i = 2; i < argc; i++){
+    for (int i = 2; i < argc; i++){
         socket.writeString(argv[i]);
         socket.readString(&response);
         std::cout << response << std::endl;
