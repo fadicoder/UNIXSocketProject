@@ -29,7 +29,7 @@ bool MySocket::writeData(void* data, ssize_t size) {
     while (nbBytesLeft > 0) {
         nbBytesSent = write(fd, data, size);
         nbBytesLeft = size - nbBytesSent;
-        if (nbBytesSent == -1) {
+        if (nbBytesSent < 0) {
             std::cerr << "ERROR: Failed to write data in server socket" << std::endl;
             return false;
         }
