@@ -7,7 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
-#include "mySocket.h"
+#include <socket.h>
 
 #define MAX_CONNECTIONS 100
 #define VERSION_SIZE 40
@@ -16,7 +16,7 @@
 
 Command versionCommand = Command("git", 2, "rev-parse", "HEAD");
 
-void* handleClient(MySocket* clientSocket) {
+void* handleClient(Socket* clientSocket) {
     std::cout << "INFO: new client accepted" << std::endl;
     std::string input;
     bool readSuccess;
@@ -47,13 +47,13 @@ int main(int argc, char** argv) {
     
     const char* SOCKET_PATH = argv[1];
     
-    MySocket mySocket;
-    if(!mySocket.create(SOCKET_PATH)){
+    Socket mySocket;
+    if(!mySocket.initialize(SOCKET_PATH)){
         return 1;
     }
 
     std::cout << "INFO: Waiting for a connection..." << std::endl;
     while(true) {
-        mySocket.acceptClient(handleClient);
+        mySocket.acceptConnection();
     }
 }

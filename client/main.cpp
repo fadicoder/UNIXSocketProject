@@ -6,8 +6,8 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <iostream>
-#include "mySocket.h"
 #include <signal.h>
+#include <socket.h>
 
 #define SHELL_LINE_START ">>> "
 
@@ -23,17 +23,23 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     const char* SOCKET_PATH = argv[1];
+
     signal(SIGPIPE, sigpipeHandler);
-    MySocket serverSocket;
-    if(!serverSocket.init(SOCKET_PATH)){
+
+    Socket socket;
+    if(!socket.initialize(SOCKET_PATH)){
         return 1;
     }
+    if (!socket.connectToServer()){
+        return 1;
+    }
+
     std::string response;
     
     if (argc > 2){
         for (uint i = 2; i < argc; i++){
-            serverSocket.writeString(argv[i]);
-            serverSocket.readString(&response);
+            socket.writeString(argv[i]);
+            socket.readString(&response);
             std::cout << response << std::endl;
         }
         return 0;
@@ -42,8 +48,8 @@ int main(int argc, char *argv[]) {
     do {
         std::cout << SHELL_LINE_START;
         std::cin >> input;
-        serverSocket.writeString(input);
-        serverSocket.readString(&response);
+        socket.writeString(input);
+        socket.readString(&response);
         std::cout << response << std::endl;
     } while(true);
 }

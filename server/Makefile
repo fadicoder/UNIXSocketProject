@@ -5,6 +5,8 @@ SRC= $(wildcard *.cpp)
 OBJECTS=$(patsubst %, $(BUILD_DIR)/%, $(SRC:.cpp=.o))
 
 CC=g++
+INCLUDE_PATH=../lib
+LIB_PATH=$(INCLUDE_PATH)/build/lib.a
 REMOVE=rm -fdr
 
 .PHONY: all run clean
@@ -12,13 +14,13 @@ REMOVE=rm -fdr
 all: $(TARGET)
 
 $(TARGET): $(BUILD_DIR) $(OBJECTS)
-	$(CC) -o $(TARGET) $(OBJECTS)
+	$(CC) -o $(TARGET) $(OBJECTS) -L. $(LIB_PATH)
 
 $(BUILD_DIR):
 	mkdir $(BUILD_DIR) 
 
 $(BUILD_DIR)/%.o: %.cpp
-	$(CC) -o $@ -c $<
+	$(CC) -I $(INCLUDE_PATH) -o $@ -c $<
 
 clean:
 	$(REMOVE) $(TARGET) $(BUILD_DIR) *.o
