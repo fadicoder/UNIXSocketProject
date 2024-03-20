@@ -23,7 +23,7 @@ private:
     int status;
 
 public:
-    Command(const char* name, uint nbArgs = 0,...);
+    Command(const char* name, int nbArgs = 0,...);
 
     ~Command();
 

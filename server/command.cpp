@@ -1,6 +1,6 @@
 #include "command.h"
 
-Command::Command(const char* name, uint nbArgs,...){
+Command::Command(const char* name, int nbArgs,...){
     this->name = (char*) name;
     this->args = new char*[nbArgs + 2];
     this->args[0] = this->name;
