@@ -44,7 +44,10 @@ int main(int argc, char** argv) {
     const char* SOCKET_PATH = argv[1];
     
     MySocket mySocket;
-    mySocket.create(SOCKET_PATH);
+    if(!mySocket.create(SOCKET_PATH)){
+        return 1;
+    }
+    
 
     std::cout << "INFO: Waiting for a connection..." << std::endl;
     while(true) {
