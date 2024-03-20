@@ -5,14 +5,13 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <iostream>
-#include <fstream>
-#include <string.h>
-#include <socket.h>
+#include <server.h>
+#include <pthread.h>
 
 #define MAX_CONNECTIONS 100
 #define VERSION_SIZE 40
 #define REJECTION_MESSAGE "REJECTED"
-
+#define VERSION_COMMAND "VERSION"
 
 Command versionCommand = Command("git", 2, "rev-parse", "HEAD");
 
@@ -22,11 +21,10 @@ void* handleClient(Socket* clientSocket) {
     bool readSuccess;
     do {
         readSuccess = clientSocket->readString(&input);
-
-        if (input == "VERSION") {
+        if (input == VERSION_COMMAND) {
             versionCommand.execute();
-            versionCommand.waitExecution();
             char version[VERSION_SIZE];
+            versionCommand.waitExecution();
             versionCommand.readStdout(version, VERSION_SIZE);
             clientSocket->writeString(version);
         } else {
@@ -40,20 +38,26 @@ void* handleClient(Socket* clientSocket) {
 
 int main(int argc, char** argv) {
     if (argc < 2) {
-        std::cout << "Required argument: path to socket" << std::endl;
+        std::cerr << "ERROR: 1 required argument missing: path to socket" << std::endl;
         return 1;
     }
     signal(SIGPIPE, SIG_IGN); // to make clients disconnect silently
     
-    const char* SOCKET_PATH = argv[1];
-    
-    Socket mySocket;
-    if(!mySocket.initialize(SOCKET_PATH)){
+    Server server;
+    SocketError error;
+
+    error = server.start(argv[1], MAX_CONNECTIONS);
+    if (error != SocketError::NO_ERROR) {
+        std::cerr << "ERROR: " << getErrorDescription(error) << std::endl;
         return 1;
     }
 
     std::cout << "INFO: Waiting for a connection..." << std::endl;
     while(true) {
-        mySocket.acceptConnection();
+        pthread_t handlerThread;
+        Socket* clientSocket = server.acceptClient();
+        if (clientSocket) {
+            pthread_create(&handlerThread, NULL, (void* (*)(void*)) handleClient, (void*) clientSocket);
+        }
     }
 }

@@ -1,45 +1,32 @@
 #include "socket.h"
 
-bool Socket::initialize(const char* socketPath) {
-    char buffer;
+Socket::Socket() {}
+
+Socket::Socket(int fd) {
+    this->fd = fd;
+}
+
+Socket::~Socket() {
+    close(fd);
+}
+
+SocketError Socket::connectToServer(const char* socketPath) {
+    sockaddr_un address;
 
     this->fd = socket(AF_UNIX, SOCK_STREAM, 0);
 
     if (this->fd == -1) {
-        std::cerr << "ERROR: Failed to create socket" << std::endl;
-        return false;
+        return SocketError::FAILED_SOCKET_CREATION;
     }
 
     memset(&address, 0, sizeof(sockaddr_un));
     address.sun_family = AF_UNIX;
-
-    if (sizeof(socketPath) > sizeof(address.sun_path) - 1){
-        std::cerr << "ERROR: Socket path is too long" << std::endl;
-        return false;
-    }
-
     strncpy(address.sun_path, socketPath, sizeof(address.sun_path) - 1);
-    
-    return true;
-}
 
-bool Socket::connectToServer(){
-    if (connect(this->fd, (sockaddr *) &address, sizeof(sockaddr_un)) == -1) {
-        std::cerr << "ERROR: Failed to connect to server socket. Make sure the server is running" << std::endl;
-        return false;
+    if (connect(this->fd, (sockaddr*) &address, sizeof(sockaddr_un)) == -1) {
+        return SocketError::FAILED_CONNECTION;
     }
-    return true;
-}
-
-Socket* Socket::acceptConnection(){
-    int cfd = accept(this->fd, NULL, NULL);
-    if (cfd == -1) {
-        std::cerr << "ERROR: error occurred while accepting client" << std::endl;
-        return nullptr;
-    }
-    Socket* clientSocket = new Socket();
-    clientSocket->fd = cfd;
-    return clientSocket;
+    return SocketError::NO_ERROR;
 }
 
 bool Socket::writeData(void* data, ssize_t size) {
@@ -83,7 +70,7 @@ bool Socket::readData(void* data, ssize_t size) {
     while (nbBytesLeft > 0) {
         nbBytesread = read(this->fd, data, size);
         nbBytesLeft = size - nbBytesread;
-        if (nbBytesread == -1) {
+        if (nbBytesread <= 0) {
             return false;
         }
     }

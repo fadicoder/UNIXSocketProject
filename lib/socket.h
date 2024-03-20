@@ -6,14 +6,20 @@
 #include <iostream>
 #include <unistd.h>
 #include <pthread.h>
+#include "error.h"
+#include "socketError.h"
 
 class Socket {
 private:
     int fd;
-    sockaddr_un address;
-    bool isServer;
 
 public:
+    Socket();
+    Socket(int fd);
+    ~Socket();
+
+    SocketError connectToServer(const char* socketPath);
+
     bool writeData(void* data, ssize_t size);
     bool writeInt(int value);
     bool writeFloat(float value);
@@ -25,10 +31,6 @@ public:
     bool readFloat(float* value);
     bool readChar(char* value);
     bool readString(std::string* value);
-
-    bool initialize(const char* socketPath);
-    bool connectToServer();
-    Socket* acceptConnection();
 };
 
 #endif // SOCKET_H

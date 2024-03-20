@@ -29,13 +29,13 @@ void runShell(Socket socket) {
     std::string input;
     std::string response;
     std::cout << "Welcome to UNIX socket shell! You can enter a command for the server or press CTRL+C to exit" << std::endl;
-    do {
+    while (true) {
         std::cout << SHELL_LINE_START;
         std::cin >> input;
         socket.writeString(input);
         socket.readString(&response);
         std::cout << response << std::endl;
-    } while(true);
+    }
 }
 
 int main(int argc, char *argv[]) {
@@ -47,12 +47,11 @@ int main(int argc, char *argv[]) {
     signal(SIGPIPE, sigpipeHandler);
 
     Socket socket;
+    SocketError error;
 
-    if(!socket.initialize(argv[1])){
-        return 1;
-    }
-
-    if (!socket.connectToServer()){
+    error = socket.connectToServer(argv[1]);
+    if (error != SocketError::NO_ERROR) {
+        std::cerr << "ERROR: " << getErrorDescription(error) << std::endl;
         return 1;
     }
     
