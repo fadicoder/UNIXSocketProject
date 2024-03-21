@@ -1,6 +1,6 @@
-# Project Title
+# Unix socket application
 
-This project is a client-server application that communicates over UNIX domain socket.
+This project contains 2 application: Client and Server. Theses applications communicate over a UNIX stream socket.
 
 ## Getting Started
 
@@ -11,13 +11,15 @@ Requirements to build the project:
 - make
 - g++
 - ar
+- aarch64-linux-gnu-g++ (only if cross compiling with aarch64)
+- aarch64-linux-gnu-ar (only if cross compiling with aarch64)
 
 Requirements to run the project:
 - git
 
 ### Installing
 
-Run the following commands to build the project:
+Run the following commands to build the project with system architecture:
 ```bash
 cd lib
 make
@@ -25,6 +27,16 @@ cd ../server
 make
 cd ../client
 make
+```
+
+For cross-compilation with aarch64 run the following commands:
+```bash
+cd lib
+make ARCH=aarch64
+cd ../server
+make ARCH=aarch64
+cd ../client
+make ARCH=aarch64
 ```
 
 ### running the server
