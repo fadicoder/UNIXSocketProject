@@ -1,6 +1,6 @@
-# Unix socket application
+# Unix socket project
 
-This project contains 2 application: Client and Server. Theses applications communicate over a UNIX stream socket. The Client application will send text commands to the Server and the server will respond with a text message. 
+This project contains 2 application: Client and Server. Theses applications communicate over a UNIX stream socket. The Client application will send text commands to the server and printout the server response. 
 
 ## Getting Started
 
@@ -42,42 +42,43 @@ make ARCH=aarch64
 ### running the server
 To start the server, run the following command from the project root directory:
 ```bash
-./server/build/server
+./server/build/server socket.sock
 ```
-The server require 1 command line argument which is the path to the the UNIX socket. The socket will be created if not already present.
+The server require 1 command line argument which is the path to the the UNIX socket. This command will create a socket file named socket.sock in the project root directory.
 
 ### running the client
 To start the client, run the following command from the project root directory:
 ```bash
-./client/build/client
+./client/build/client socket.sock VERSION
 ```
 
-The client require one argument which is the path to the socket used when starting the server. The remaining arguments will be sent as separate commands to the server. If no commands are provided, the client will run in shell mode and will read commands from the command line.
+The command above will printout the last commit id in your local repository.
+
+The client require one argument which is the path to the socket by the server. The remaining arguments will be sent as separate commands to the server. If no commands are provided, the client will run in shell mode and read commands from the command line.
 
 ### Running with docker container
 
-from terminal A run the following commands:
+from terminal A, run the following commands:
 ```bash
 sudo docker build -t image .
 sudo run it image bash
 ```
 
-from terminal B the command
+from terminal B, run the following command:
 ```bash
 sudo docker ps
 ```
-This should show the container id of the image we just ran in terminal A. We will join that session using this container id.
+
+This should print the container id of the image we just ran in terminal A. We will join that session using this container id.
 ```bash
-sudo docker exec -it <CONTAINER ID> bash
+sudo docker exec -it <CONTAINER_ID> bash
 ```
 
-Now we can run the client and the server as described in the previous sections.
+Now we can run the client and the server from terminals A and B as described in the previous sections.
 
 ### Possible commands
 Here is a list of possible commands:
 
 - VERSION: Will return the last commit id
 
-Unknown commands will be responded with "REJECTED"
-
-**The commands above are case sensible**
+**All commands are case sensible**
