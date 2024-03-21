@@ -15,6 +15,18 @@
 
 Command versionCommand = Command("git", 2, "rev-parse", "HEAD");
 
+void sendVersion(Socket* clientSocket) {
+    versionCommand.execute();
+    versionCommand.waitExecution();
+    if (versionCommand.getExitStatus() == 0){
+        char version[VERSION_SIZE];
+        versionCommand.readStdout(version, VERSION_SIZE);
+        clientSocket->writeString(version);
+    } else {
+        clientSocket->writeString("git command failed");
+    }
+}
+
 void* handleClient(Socket* clientSocket) {
     std::cout << "INFO: new client accepted" << std::endl;
     std::string input;
@@ -22,11 +34,7 @@ void* handleClient(Socket* clientSocket) {
     do {
         readSuccess = clientSocket->readString(&input);
         if (input == VERSION_COMMAND) {
-            versionCommand.execute();
-            char version[VERSION_SIZE];
-            versionCommand.waitExecution();
-            versionCommand.readStdout(version, VERSION_SIZE);
-            clientSocket->writeString(version);
+            sendVersion(clientSocket);
         } else {
             clientSocket->writeString(REJECTION_MESSAGE);
         }

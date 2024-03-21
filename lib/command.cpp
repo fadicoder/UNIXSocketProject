@@ -69,17 +69,14 @@ ssize_t Command::writeStdin(void *__buf, size_t __nbytes){
 }
 
 bool Command::exitedNormally(){
-    waitExecution();
     return WIFEXITED(this->status);
 }
 
 int Command::getExitStatus(){
-    waitExecution();
     return WEXITSTATUS(this->status);
 }
 
 int Command::getStatus(){
-    waitExecution();
     return status;
 }
 
