@@ -11,6 +11,9 @@ enum class SocketError {
     FAILED_LISTEN,
 };
 
+/**
+ * @return a message that describes the error or a empty string of error is SocketError::NO_ERROR
+*/
 const char* getErrorDescription(SocketError error);
 
 #endif // SOCKET_ERROR
