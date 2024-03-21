@@ -5,8 +5,8 @@ SRC= $(wildcard *.cpp)
 OBJECTS=$(patsubst %, $(BUILD_DIR)/%, $(SRC:.cpp=.o))
 
 ifeq ($(ARCH), aarch64)
-	CC=aarch64-linux-gnu-g++
-	AR=aarch64-linux-gnu-ar
+	CC=aarch64-linux-g++
+	AR=aarch64-linux-ar
 else
 	CC=g++
 	AR=ar

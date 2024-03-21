@@ -5,7 +5,7 @@ SRC= $(wildcard *.cpp)
 OBJECTS=$(patsubst %, $(BUILD_DIR)/%, $(SRC:.cpp=.o))
 
 ifeq ($(ARCH), aarch64)
-	CC=aarch64-linux-gnu-g++
+	CC=aarch64-linux-g++
 else
 	CC=g++
 endif
