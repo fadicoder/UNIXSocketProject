@@ -40,14 +40,14 @@ make ARCH=aarch64
 ```
 
 ### running the server
-To start the server, run the following command in the project directory:
+To start the server, run the following command from the project root directory:
 ```bash
 ./server/build/server
 ```
 The server require 1 command line argument which is the path to the the UNIX socket. The socket will be created if not already present.
 
 ### running the client
-To start the client, run the following command in the project directory:
+To start the client, run the following command from the project root directory:
 ```bash
 ./client/build/client
 ```
