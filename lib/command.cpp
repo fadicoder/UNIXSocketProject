@@ -81,7 +81,10 @@ int Command::getStatus(){
 }
 
 int Command::sendSignal(int sig) {
-    return kill(this->processPid, sig);
+    if (this->processPid > 0) {
+        return kill(this->processPid, sig);
+    }
+    return -1;
 }
 
 void Command::executeChildProcess(int inputPipe[], int outputPipe[], int errorPipe[]) {

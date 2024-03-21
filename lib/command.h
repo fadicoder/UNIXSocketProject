@@ -25,6 +25,9 @@ private:
 public:
     Command(const char* name, int nbArgs = 0,...);
 
+    /**
+     * If the object is destructed while a command is being executed, SIGKILL will be sent the process executing the command.
+    */
     ~Command();
 
     /**
@@ -58,16 +61,32 @@ public:
     ssize_t writeStdin(void *__buf, size_t __nbytes);
 
     /**
-     * This function block until the command program exists
+     * This function block until the command program exists. It will stores the status of the process.
     */
     void waitExecution();
 
+    /**
+     * This function should be called after waitExecution()
+     * @return a boolean that indicate of the command exited normally
+    */
     bool exitedNormally();
 
+    /**
+     * This function should be called after waitExecution()
+     * @return the exit status of the command
+    */
     int getExitStatus();
 
+    /**
+     * This function should be called after waitExecution()
+     * @return the status of the command
+    */
     int getStatus();
     
+    /**
+     * This function should be called after waitExecution()
+     * @return 0 when success, -1 in case of error
+    */
     int sendSignal(int sig);
 
 private:
