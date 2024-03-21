@@ -1,6 +1,6 @@
 # Unix socket project
 
-This project contains 2 application: Client and Server. Theses applications communicate over a UNIX stream socket. The Client application will send text commands to the server and printout the server response. 
+This project contains 2 applications: Client and Server. Theses applications communicate over a UNIX stream socket. The Client application will send text commands to the server and printout the server response. The server listens for clients connection of a UNIX socket and responds to its commands.
 
 ## Getting Started
 
