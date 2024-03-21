@@ -4,10 +4,15 @@ TARGET=$(BUILD_DIR)/$(APPLICATION_NAME)
 SRC= $(wildcard *.cpp)
 OBJECTS=$(patsubst %, $(BUILD_DIR)/%, $(SRC:.cpp=.o))
 
-CC=g++
+ifeq ($(ARCH), aarch64)
+	CC=aarch64-linux-gnu-g++
+else
+	CC=g++
+endif
+
 INCLUDE_PATH=../lib
 LIB_PATH=$(INCLUDE_PATH)/build/lib.a
-LD_FLAGS=-Wall -L. $(LIB_PATH) -pthread
+LD_FLAGS= -L../lib/build -lcommon -lpthread
 CC_FLAG=-Wall -I $(INCLUDE_PATH)
 
 REMOVE=rm -fdr
@@ -17,13 +22,13 @@ REMOVE=rm -fdr
 all: $(TARGET)
 
 $(TARGET): $(BUILD_DIR) $(OBJECTS)
-	$(CC) -o $(TARGET) $(OBJECTS) $(LD_FLAGS)
+	$(CC) -o $(TARGET) $(OBJECTS) $(LD_FLAGS) 
 
 $(BUILD_DIR):
 	mkdir $(BUILD_DIR) 
 
 $(BUILD_DIR)/%.o: %.cpp
-	$(CC) -o $@ -c $< $(CC_FLAG)
+	$(CC) -l. -o $@ -c $< $(CC_FLAG)
 
 clean:
 	$(REMOVE) $(TARGET) $(BUILD_DIR) *.o

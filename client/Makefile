@@ -4,10 +4,15 @@ TARGET=$(BUILD_DIR)/$(APPLICATION_NAME)
 SRC= $(wildcard *.cpp)
 OBJECTS=$(patsubst %, $(BUILD_DIR)/%, $(SRC:.cpp=.o))
 
-CC=g++
+ifeq ($(ARCH), aarch64)
+	CC=aarch64-linux-gnu-g++
+else
+	CC=g++
+endif
+
 INCLUDE_PATH=../lib
 LIB_PATH=$(INCLUDE_PATH)/build/lib.a
-LD_FLAGS= -L../lib/build -lcommon -lpthread
+LD_FLAGS= -L../lib/build -lcommon
 CC_FLAG=-Wall -I $(INCLUDE_PATH)
 
 REMOVE=rm -fdr

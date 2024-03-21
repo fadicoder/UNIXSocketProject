@@ -4,9 +4,16 @@ TARGET=$(BUILD_DIR)/lib$(LIB_NAME).a
 SRC= $(wildcard *.cpp)
 OBJECTS=$(patsubst %, $(BUILD_DIR)/%, $(SRC:.cpp=.o))
 
-CC=g++
+ifeq ($(ARCH), aarch64)
+	CC=aarch64-linux-gnu-g++
+	AR=aarch64-linux-gnu-ar
+else
+	CC=g++
+	AR=ar
+endif
+
 CC_FLAGS=-Wall
-AR=ar rcs
+LD_FLAGS=rcs
 REMOVE=rm -fdr
 
 .PHONY: all run clean
@@ -14,7 +21,7 @@ REMOVE=rm -fdr
 all: $(TARGET)
 
 $(TARGET): $(BUILD_DIR) $(OBJECTS)
-	$(AR) $(TARGET) $(OBJECTS)
+	$(AR) $(LD_FLAGS) $(TARGET) $(OBJECTS)
 
 $(BUILD_DIR):
 	mkdir $(BUILD_DIR) 
