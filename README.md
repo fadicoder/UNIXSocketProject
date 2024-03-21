@@ -1,6 +1,6 @@
 # Unix socket application
 
-This project contains 2 application: Client and Server. Theses applications communicate over a UNIX stream socket.
+This project contains 2 application: Client and Server. Theses applications communicate over a UNIX stream socket. The Client application will send text commands to the Server and the server will respond with a text message. 
 
 ## Getting Started
 
@@ -11,8 +11,8 @@ Requirements to build the project:
 - make
 - g++
 - ar
-- aarch64-linux-gnu-g++ (only if cross compiling with aarch64)
-- aarch64-linux-gnu-ar (only if cross compiling with aarch64)
+- aarch64-linux-g++ (only if cross compiling with aarch64)
+- aarch64-linux-ar (only if cross compiling with aarch64)
 
 Requirements to run the project:
 - git
@@ -40,18 +40,44 @@ make ARCH=aarch64
 ```
 
 ### running the server
-To run the server execute the binary file in "server/build/server". Make sure that you are executing the program from a directory which is part of a git repository otherwise the VERSION command will not work. 
-
-The program require 1 command line argument which is the path to the the UNIX socket. The socket will be created if not already present.
+To start the server, run the following command in the project directory:
+```bash
+./server/build/server
+```
+The server require 1 command line argument which is the path to the the UNIX socket. The socket will be created if not already present.
 
 ### running the client
-To run the client execute the binary file "client/build/client". Make sure you have started the server before running the client.
+To start the client, run the following command in the project directory:
+```bash
+./client/build/client
+```
 
-The program require one argument which is the path to the socket used when starting the server. If no other arguments are provided, the client will run in shell mode. Otherwise it will send each argument as a separate command to the server.
+The client require one argument which is the path to the socket used when starting the server. The remaining arguments will be sent as separate commands to the server. If no commands are provided, the client will run in shell mode and will read commands from the command line.
 
-## Possible commands
+### Running with docker container
+
+from terminal A run the following commands:
+```bash
+sudo docker build -t image .
+sudo run it image bash
+```
+
+from terminal B the command
+```bash
+sudo docker ps
+```
+This should show the container id of the image we just ran in terminal A. We will join that session using this container id.
+```bash
+sudo docker exec -it <CONTAINER ID> bash
+```
+
+Now we can run the client and the server as described in the previous sections.
+
+### Possible commands
 Here is a list of possible commands:
 
 - VERSION: Will return the last commit id
+
+Unknown commands will be responded with "REJECTED"
 
 **The commands above are case sensible**
