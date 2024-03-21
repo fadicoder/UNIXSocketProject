@@ -18,6 +18,11 @@ public:
     Socket(int fd);
     ~Socket();
 
+    /**
+     * This function allows the client to connect to the server listening on the UNIX socket in the specified path.
+     * It should be called after the server has started.
+     * @returns The instance of SocketError that represents the error
+    */
     SocketError connectToServer(const char* socketPath);
 
     bool writeData(void* data, ssize_t size);
